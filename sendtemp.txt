@@ -1,0 +1,38 @@
+exports.post = function(request, response) 
+{    
+    response.send(200, SendLog(request, response));
+};
+
+exports.get = function(request, response) 
+{  
+    response.send(200, SendLog(request, response));
+};
+
+function SendLog(request, response)
+{
+    var currentdate = calcTime('+8');
+    var datetime =  currentdate.getFullYear()+ "-" + (currentdate.getMonth()+1) + "-" + currentdate.getDate() + " " + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds() ;
+    var temp = request.query.temp;
+    var ldr = request.query.ldr;
+    var loc = request.query.location;
+    
+    request.service.mssql.query
+    (
+        "INSERT INTO templog (id,temperature,ldr,location,timestamp) VALUES ((SELECT MAX(id) from templog)+1,'"+temp+"','"+ldr+"','"+loc+"','"+datetime+"')",
+        {
+            success: function(results) 
+            {
+                response.send(200, results);
+            }
+        }
+    );
+        
+    return 'Done' 
+}
+
+function calcTime(offset) {
+    var d = new Date();
+    var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+    var nd = new Date(utc + (3600000*offset));
+    return nd
+}

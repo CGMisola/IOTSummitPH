@@ -1,0 +1,22 @@
+exports.post = function(request, response) {
+    var a = GetLogs(request, response);
+};
+
+exports.get = function(request, response) {
+    var a = GetLogs(request, response);
+};
+
+function GetLogs(request, response)
+{
+    request.service.mssql.query
+    (
+        'select * from templog', 
+        {
+            success: function(results) 
+            {
+                response.send(200, results);
+            }
+        }
+    );  
+    return 'Done' 
+}
